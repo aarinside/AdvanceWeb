@@ -5,10 +5,12 @@ from bson import json_util
 
 app = Flask(__name__)
 
-# client = pymongo.MongoClient("mongodb://admin:HYBfhl68822@10.100.2.121:27017")  #ทำการเชื่อม mongodb โดยใช้ user และ password ที่ได้รับ
 client = pymongo.MongoClient(
-    "mongodb://admin:HYBfhl68822@node9144-advweb-06.app.ruk-com.cloud:11168"
-)
+    "mongodb://admin:HYBfhl68822@10.100.2.121:27017"
+)  # ทำการเชื่อม mongodb โดยใช้ user และ password ที่ได้รับ
+# client = pymongo.MongoClient(
+#     "mongodb://admin:HYBfhl68822@node9144-advweb-06.app.ruk-com.cloud:11168"
+# )
 
 db = client["Player"]  # ทำการเชื่อมต่อ mongodb ที่ได้สร้างไว้
 
@@ -21,25 +23,27 @@ def index():
 
 @app.route("/test")
 def get_join():
-    char = db.player
-    getjoin = char.aggregate(
+    char = db.player  # ทำการเอา collection มาเก็บไว้ในตัวแปร
+    getjoin = char.aggregate(  # ใช้ library ในการ join collection
         [
             {
-                "$lookup": {
-                    "from": "manager",
-                    "localField": "clubname",
-                    "foreignField": "clubname",
-                    "as": "club",
+                "$lookup": {  # คำสั่งในการ join table
+                    "from": "manager",  # นำ collection ที่ต้องการจะ join มาใส่
+                    "localField": "clubname",  # นำชื่อ คอลัมใน collection ของเราที่ต้องการจะ join มาใส่
+                    "foreignField": "clubname",  # นำชื่อ คอลัมใน collection อื่นๆที่ต้องการจะ join มาใส่
+                    "as": "club",  # ให้แสดงเป็น Title เป็นชื่ออะไร
                 }
             },
-            {"$unwind": "$club"},
             {
-                "$project": {
-                    "_id": 0,
+                "$unwind": "$club"
+            },  # ทำการลบข้อมูลตัวต่างๆที่ ข้อมูลไม่แมตท์กันออกจพได้แค่ข้อมูลที่ตรงกัน
+            {
+                "$project": {  # เป็นการเลือกเฉพาะสิ่งที่เราต้องการจะดู
+                    "_id": 0,  # ไม่ต้องการให้เลข _id ออกให้เป็น 0 แต่ถ้าต้องการให้ข้อมูลโชว์ให้ใส่เป็น 1
                     "name": 1,
                     "manager": 1,
                     "club": {
-                        "clubname": "$club.clubname",
+                        "clubname": "$club.clubname",  # เป็นการจัด field ให่ออกมาเฉพาะข้อมูล
                         "managername": "$club.name",
                     },
                 }
