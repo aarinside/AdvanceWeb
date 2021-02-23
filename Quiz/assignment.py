@@ -1,6 +1,7 @@
 import pymongo
 from flask import Flask, jsonify, render_template, request
-from flask_pymongo import PyMongo
+
+# from flask_pymongo import PyMongo
 from bson import json_util
 
 app = Flask(__name__)
@@ -140,4 +141,4 @@ def delete(name):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=5000)
