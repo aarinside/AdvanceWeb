@@ -1,3 +1,6 @@
+import requests
+
+
 class Employee:
     """A sample Employee class"""
 
